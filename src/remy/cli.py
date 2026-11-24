@@ -2,12 +2,30 @@
 import typer
 from rich.console import Console
 from rich.panel import Panel
-from .core import add_recipe_from_url, generate_meal_plan
+from .core import add_recipe_from_url, generate_meal_plan, get_recipe
 from .storage import get_recipes_dir, load_all_recipes
 
 app = typer.Typer(help="Remy: Your local macOS meal planning assistant.")
 console = Console()
 
+
+@app.command()
+def check(url: str = typer.Argument(..., help="URL of the recipe webpage to extract")):
+    '''Extract a recipe but don't save it in the library'''
+    with console.status("[bold green]Fetching webpage and extracting recipe with fm..."):
+        try:
+            recipe = get_recipe(url)
+        except Exception as e:
+            console.print(f"[bold red]Failed to add recipe:[/bold red] {e}")
+            raise typer.Exit(code=1)
+    console.print(f"[bold green]Extracted:[/bold green] {recipe.title} ({len(recipe.ingredients)} ingredients)")
+    console.print(f"[bold]{recipe.title}[/bold]")
+    console.print("\n[bold]INGREDIENTS:[/bold]")
+    for i in recipe.ingredients:
+        console.print(f"{i.quantity} {i.unit} - {i.name}")
+    console.print("\n[bold]INSTRUCTIONS:[/bold]")
+    for j in recipe.instructions:
+        console.print(f"{j}")
 
 @app.command()
 def add(url: str = typer.Argument(..., help="URL of the recipe webpage to extract")):

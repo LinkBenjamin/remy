@@ -6,6 +6,10 @@ from .llm import extract_recipe
 from .models import Ingredient, Recipe
 from .storage import load_all_recipes, save_recipe
 
+def get_recipe(url: str) -> Recipe:
+    '''Extract the recipe'''
+    recipe = extract_recipe(url)
+    return recipe
 
 def add_recipe_from_url(url: str) -> tuple[Recipe, Path]:
     '''Add a recipe from a URL'''
